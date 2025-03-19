@@ -1,7 +1,10 @@
 const express = require('express');
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema } = require('graphql');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const WebSocket = require('ws');
 
 const app = express();
 const port = 3000;
@@ -13,20 +16,8 @@ const productsFilePath = path.join(__dirname, 'products.json');
 
 // Чтение товаров из файла
 function readProductsFromFile() {
-    return new Promise((resolve, reject) => {
-        fs.readFile(productsFilePath, 'utf8', (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                try {
-                    const parsedData = JSON.parse(data);
-                    resolve(Array.isArray(parsedData) ? parsedData : []); // Просто массив
-                } catch (parseError) {
-                    reject(parseError);
-                }
-            }
-        });
-    });
+    const data = fs.readFileSync(productsFilePath, 'utf8');
+    return JSON.parse(data);
 }
 
 // Запись товаров в файл
@@ -80,7 +71,7 @@ app.post('/products', async (req, res) => {
     }
 });
 
-// Получение одного товара по ID (для редактирования)
+// Получение одного товара по ID
 app.get('/products/:id', async (req, res) => {
     const productId = req.params.id;
 
@@ -142,6 +133,41 @@ app.delete('/products/:id', async (req, res) => {
         res.status(500).json({ error: 'Ошибка при удалении товара' });
     }
 });
+
+
+// GraphQL схема
+const schema = buildSchema(`
+    type Product {
+        id: ID!
+        name: String
+        price: Float
+        description: String
+    }
+
+    type Query {
+        products: [Product]
+    }
+`);
+
+// Резолверы
+const root = {
+    products: () => {
+        const products = readProductsFromFile();
+        return products.map(({ id, name, price, description }) => ({
+            id,
+            name,
+            price,
+            description
+        }));
+    }
+};
+
+// GraphQL endpoint
+app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true // Включаем интерфейс GraphiQL для тестирования
+}));
 
 // Запуск сервера
 app.listen(port, () => {

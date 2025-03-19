@@ -92,9 +92,8 @@ h2 {
     overflow-x: auto;
 }
 .product-body {
-    width: 300px;
+    width: 280px;
     padding: 20px;
-
 }
 .accordion table {
     min-width: 700px;

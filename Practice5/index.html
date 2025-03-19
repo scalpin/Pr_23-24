@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой сайт</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="bootstrap_syles.css" />
+    <link rel="stylesheet" href="bootstrap_syles.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    <!-- Шапка -->
+    <!-- Шапка  -->
     <div class="top-header bg-dark text-white py-3">
         <div class="container d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
@@ -179,7 +177,7 @@
     <div class="container my-4">
         <h2 id="products">Мои товары</h2>
         <div class="d-flex overflow-auto" id="product-list">
-            <!-- Здесь будут товары -->
+            <!-- Здесь товары -->
         </div>
     </div>
 
@@ -258,31 +256,50 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', loadProducts);
-
-        function loadProducts() {
-            fetch('http://localhost:3000/products')
-                .then(response => response.json())
-                .then(data => displayProducts(data))
-                .catch(error => console.error('Ошибка загрузки товаров:', error));
+    
+        async function loadProducts() {
+            const query = `
+                {
+                    products {
+                        name
+                        price
+                        description
+                    }
+                }
+            `;
+    
+            try {
+                const response = await fetch('http://localhost:3000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+    
+                const result = await response.json();
+                displayProducts(result.data.products);
+            } catch (error) {
+                console.error('Ошибка загрузки товаров:', error);
+            }
         }
-
+    
         function displayProducts(products) {
             const container = document.getElementById('product-list');
-            container.innerHTML = ''; // Очищаем контейнер перед добавлением новых карточек
-
+            container.innerHTML = '';
+    
             products.forEach(product => {
                 const card = document.createElement('div');
                 card.classList.add('product-card', 'card');
-
+    
                 card.innerHTML = `
                     <div class="product-body">
                         <h5 class="card-title">${product.name}</h5>
-                        Цена: <h10 class="card-price">${product.price}</p>
-                        Категория: <h10 class="card-category">${product.category}</p>
-                        Описание: <h10 class="card-text">${product.description}</p>
+                        <p class="card-price">Цена: ${product.price} ₽</p>
+                        <p class="card-text">Описание: ${product.description}</p>
                     </div>
                 `;
-
+    
                 container.appendChild(card);
             });
         }
