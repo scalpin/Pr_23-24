@@ -134,3 +134,25 @@ document.getElementById('addProductForm').addEventListener('submit', function (e
         })
         .catch(error => console.error('Ошибка добавления товара:', error));
 });
+
+/*
+adminSocket.onmessage = (event) => {
+    const chat = document.getElementById('admin-chat');
+
+    if (event.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const message = document.createElement('div');
+            message.textContent = reader.result;
+            chat.appendChild(message);
+            chat.scrollTop = chat.scrollHeight;
+        };
+        reader.readAsText(event.data);
+    } else {
+        const message = document.createElement('div');
+        message.textContent = event.data;
+        chat.appendChild(message);
+        chat.scrollTop = chat.scrollHeight;
+    }
+};
+*/

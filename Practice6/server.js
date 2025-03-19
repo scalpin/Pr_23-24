@@ -2,17 +2,45 @@ const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
+const http = require('http');
 const WebSocket = require('ws');
 
 const app = express();
-const port = 3000;
+const server = http.createServer(app);  // HTTP сервер для WebSocket
+const wss = new WebSocket.Server({ server });  // Создаем WebSocket сервер
+
+const productsFilePath = './products.json';
 
 app.use(cors());
 app.use(express.json());
 
-const productsFilePath = path.join(__dirname, 'products.json');
+
+// WebSocket обработка
+const clients = new Set();
+
+wss.on('connection', (ws) => {
+    console.log('Новое подключение');
+
+    // Добавляем клиента в Set
+    clients.add(ws);
+
+    ws.on('message', (message) => {
+        console.log(`Сообщение: ${message}`);
+
+        // Рассылаем сообщение всем клиентам (админу и пользователю)
+        for (const client of clients) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        }
+    });
+
+    ws.on('close', () => {
+        console.log('Клиент отключился');
+        clients.delete(ws);
+    });
+});
 
 // Чтение товаров из файла
 function readProductsFromFile() {
@@ -151,15 +179,7 @@ const schema = buildSchema(`
 
 // Резолверы
 const root = {
-    products: () => {
-        const products = readProductsFromFile();
-        return products.map(({ id, name, price, description }) => ({
-            id,
-            name,
-            price,
-            description
-        }));
-    }
+    products: () => readProductsFromFile()
 };
 
 // GraphQL endpoint
@@ -169,7 +189,30 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true // Включаем интерфейс GraphiQL для тестирования
 }));
 
+/*
+wss.on('connection', (socket) => {
+    console.log('Новое подключение');
+
+    // При получении сообщения от клиента
+    socket.on('message', (message) => {
+        console.log('Сообщение:', message.toString());
+
+        // Широковещательная рассылка сообщения всем клиентам
+        wss.clients.forEach((client) => {
+            if (client !== socket && client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+
+    socket.on('close', () => {
+        console.log('Клиент отключился');
+    });
+});
+*/
+
 // Запуск сервера
-app.listen(port, () => {
-    console.log(`Сервер запущен на http://localhost:${port}`);
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Сервер запущен на http://localhost:${PORT}`);
 });

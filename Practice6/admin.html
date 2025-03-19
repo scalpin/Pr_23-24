@@ -15,6 +15,15 @@
             <!-- Карточки товаров будут вставляться сюда -->
           </div>
         </section>
+
+        <div class="container my-5">
+          <h2>Чат поддержки</h2>
+          <div id="admin-chat" class="border p-3" style="height: 300px; overflow-y: auto; background: #f1f1f1;">
+              <!-- Сообщения будут отображаться здесь -->
+          </div>
+          <input type="text" id="adminChatInput" class="form-control my-2" placeholder="Введите сообщение...">
+          <button onclick="sendAdminMessage()" class="btn btn-primary">Отправить</button>
+        </div>
     
         <!-- Форма для добавления товара -->
         <div id="addProductFormContainer" class="add-product-form-container">
@@ -26,9 +35,52 @@
             <input type="text" id="productDescription" placeholder="Описание">
             <button type="submit">Добавить</button>
             <button type="button" id="cancelAddProduct">Отмена</button>
-        </form>
+          </form>
         </div>
+
+
+        <script>
+          const adminSocket = new WebSocket('ws://localhost:3000');
+      
+          adminSocket.onopen = () => {
+              console.log('Админ подключился');
+          };
+      
+          adminSocket.onmessage = (event) => {
+              const chat = document.getElementById('admin-chat');
+
+              if (event.data instanceof Blob) {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                      const message = document.createElement('div');
+                      message.textContent = reader.result;
+                      chat.appendChild(message);
+                      chat.scrollTop = chat.scrollHeight;
+                  };
+                  reader.readAsText(event.data);
+              } else {
+                  const message = document.createElement('div');
+                  message.textContent = event.data;
+                  chat.appendChild(message);
+                  chat.scrollTop = chat.scrollHeight;
+              }
+          };
+      
+          adminSocket.onclose = () => {
+              console.log('Соединение с админом закрыто');
+          };
+      
+          function sendAdminMessage() {
+              const input = document.getElementById('adminChatInput');
+              const message = input.value.trim();
+      
+              if (message) {
+                  adminSocket.send(`Админ: ${message}`);
+                  input.value = '';
+              }
+          }
+      </script>
         
-    <script src="admin.js"></script>
+      <script src="admin.js"></script>
   </body>
 </html>
