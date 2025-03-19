@@ -343,19 +343,25 @@
             }
         };
 
+        // Отправка сообщения
+        const sendMessage = () => {
+            const messageInput = document.getElementById('chatInput');
+            const message = messageInput.value;
+            socket.send(message);  // Отправляем сообщение на сервер WebSocket
+            messageInput.value = '';  // Очищаем поле ввода
+
+            // Отображаем собственное сообщение на клиенте
+            const chat = document.getElementById('chat');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `Вы: ${message}`;
+            chat.appendChild(messageElement);
+            chat.scrollTop = chat.scrollHeight;
+        };
+
         socket.onclose = () => {
             console.log('Соединение закрыто');
         };
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-
-            if (message) {
-                socket.send(`Покупатель: ${message}`);
-                input.value = '';
-            }
-        }
 
     </script>
 

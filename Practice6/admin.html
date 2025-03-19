@@ -18,7 +18,7 @@
 
         <div class="container my-5">
           <h2>Чат поддержки</h2>
-          <div id="admin-chat" class="border p-3" style="height: 300px; overflow-y: auto; background: #f1f1f1;">
+          <div id="admin-chat" class="admin-border" style="height: 300px; overflow-y: auto; background: #f1f1f1;">
               <!-- Сообщения будут отображаться здесь -->
           </div>
           <input type="text" id="adminChatInput" class="form-control my-2" placeholder="Введите сообщение...">
@@ -65,20 +65,25 @@
                   chat.scrollTop = chat.scrollHeight;
               }
           };
+
+          const sendAdminMessage = () => {
+              const messageInput = document.getElementById('adminChatInput');
+              const message = messageInput.value;
+              adminSocket.send(message);  // Отправляем сообщение на сервер WebSocket
+              messageInput.value = '';  // Очищаем поле ввода
+
+              // Отображаем собственное сообщение на админской панели
+              const chat = document.getElementById('admin-chat');
+              const messageElement = document.createElement('div');
+              messageElement.textContent = `Вы: ${message}`;
+              chat.appendChild(messageElement);
+              chat.scrollTop = chat.scrollHeight;
+          };
       
           adminSocket.onclose = () => {
               console.log('Соединение с админом закрыто');
           };
       
-          function sendAdminMessage() {
-              const input = document.getElementById('adminChatInput');
-              const message = input.value.trim();
-      
-              if (message) {
-                  adminSocket.send(`Админ: ${message}`);
-                  input.value = '';
-              }
-          }
       </script>
         
       <script src="admin.js"></script>
