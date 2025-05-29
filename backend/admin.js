@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', loadProducts);
 
 function loadProducts() {
-    fetch('http://localhost:4000/products')
+    fetch('https://localhost:3000/products')
         .then(response => response.json())
         .then(data => {
-            displayProducts(data);
+            document.getElementById('instanceLabel').innerText = `Ответ от backend на порту ${data.instance}`;
+            displayProducts(data.products);
         })
         .catch(error => console.error('Ошибка загрузки товаров:', error));
 }

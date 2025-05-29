@@ -7,6 +7,8 @@ const https = require('https');
 const WebSocket = require('ws');
 const path = require('path');
 
+const instanceId = process.env.PORT || 'unknown';
+
 const app = express();
 
 // Настройка HTTPS
@@ -74,7 +76,10 @@ function writeProductsToFile(products) {
 app.get('/products', async (req, res) => {
     try {
         const products = await readProductsFromFile();
-        res.json(products);
+        res.json({
+            instance: instanceId,
+            products: products
+        });
     } catch (error) {
         res.status(500).json({ error: 'Ошибка при получении товаров' });
     }
