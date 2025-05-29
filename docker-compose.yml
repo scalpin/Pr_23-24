@@ -1,13 +1,39 @@
 services:
-  backend:
+  backend1:
     build: ./backend
     ports:
-      - "4000:3000"
-    restart: always
+      - "3000:3000"
+    volumes:
+      - ./certs:/certs
+    environment:
+      - PORT=3000
 
-  frontend:
-    build: ./Practice5
+  backend2:
+    build: ./backend
     ports:
-      - "3000:80"
+      - "3001:3001"
+    volumes:
+      - ./certs:/certs
+    environment:
+      - PORT=3001
+
+  backend3:
+    build: ./backend
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./certs:/certs
+    environment:
+      - PORT=3002
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/my-custom.conf:ro
+      - ./certs:/etc/nginx/certs:ro
     depends_on:
-      - backend
+      - backend1
+      - backend2
+      - backend3

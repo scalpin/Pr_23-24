@@ -3,14 +3,23 @@ const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const fs = require('fs');
 const cors = require('cors');
-const http = require('http');
+const https = require('https');
 const WebSocket = require('ws');
 const path = require('path');
 
 const app = express();
-const server = http.createServer(app);
+
+// Настройка HTTPS
+const sslOptions = {
+    key: fs.readFileSync(path.join(__dirname, '..', 'certs', 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'cert.pem')),
+};
+
+// Сервер HTTPS + WebSocket
+const server = https.createServer(sslOptions, app);
 const wss = new WebSocket.Server({ server });
 
+const PORT = process.env.PORT || 3000;
 const productsFilePath = './products.json';
 
 app.use(cors());
@@ -164,9 +173,7 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }));
 
-// Старт сервера
-const PORT = 3000;
-
+// Запуск HTTPS-сервера
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Сервер запущен на http://localhost:${PORT}`);
+    console.log(`HTTPS сервер запущен на https://localhost:${PORT}`);
 });
