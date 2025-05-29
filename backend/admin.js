@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', loadProducts);
 
 function loadProducts() {
-    fetch('http://localhost:3000/products')
+    fetch('http://localhost:4000/products')
         .then(response => response.json())
         .then(data => {
             displayProducts(data);
@@ -31,7 +31,7 @@ function displayProducts(products) {
 }
 
 function showEditForm(id) {
-    fetch(`http://localhost:3000/products/${id}`)
+    fetch(`http://localhost:4000/products/${id}`)
         .then(response => response.json())
         .then(product => {
             const productName = prompt("Новое название товара:", product.name);
@@ -46,7 +46,7 @@ function showEditForm(id) {
                 description: productDescription
             };
 
-            fetch(`http://localhost:3000/products/${id}`, {
+            fetch(`http://localhost:4000/products/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedProduct)
@@ -65,7 +65,7 @@ function deleteProduct(id) {
     if (!confirm('Вы уверены, что хотите удалить товар?')) {
         return;
     }
-    fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' })
+    fetch(`http://localhost:4000/products/${id}`, { method: 'DELETE' })
         .then(() => {
             alert('Товар удален');
             loadProducts();
@@ -97,7 +97,7 @@ document.getElementById('addProductForm').addEventListener('submit', function(e)
         description: description // Добавляем описание товара
     };
 
-    fetch('http://localhost:3000/products', {
+    fetch('http://localhost:4000/products', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -123,7 +123,7 @@ document.getElementById('addProductForm').addEventListener('submit', function (e
 
     const newProduct = { name, price: parseInt(price), category, description };
 
-    fetch('http://localhost:3000/products', {
+    fetch('http://localhost:4000/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProduct)

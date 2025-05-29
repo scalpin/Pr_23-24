@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "4000:3000"
+    restart: always
+
+  frontend:
+    build: ./Practice5
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
