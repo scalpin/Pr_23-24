@@ -36,4 +36,4 @@ services:
     depends_on:
       - backend1
       - backend2
-      - backend3
+      - backend3 
