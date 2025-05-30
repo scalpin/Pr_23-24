@@ -6,6 +6,7 @@ services:
     volumes:
       - ./certs:/certs
     environment:
+      - INSTANCE_NAME=backend1
       - PORT=3000
 
   backend2:
@@ -15,6 +16,7 @@ services:
     volumes:
       - ./certs:/certs
     environment:
+      - INSTANCE_NAME=backend2
       - PORT=3001
 
   backend3:
@@ -24,6 +26,7 @@ services:
     volumes:
       - ./certs:/certs
     environment:
+      - INSTANCE_NAME=backend3
       - PORT=3002
 
   nginx:

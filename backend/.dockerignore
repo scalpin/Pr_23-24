@@ -6,6 +6,5 @@ node_modules
 ../Practice5
 ../certs
 docker-compose.yml
-products.json
 *.pem
 *.crt

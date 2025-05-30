@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', loadProducts);
 
 function loadProducts() {
-    fetch('https://localhost:3000/products')
+    fetch('https://localhost/products')
         .then(response => response.json())
         .then(data => {
             document.getElementById('instanceLabel').innerText = `Ответ от backend на порту ${data.instance}`;
@@ -32,7 +32,7 @@ function displayProducts(products) {
 }
 
 function showEditForm(id) {
-    fetch(`http://localhost:4000/products/${id}`)
+    fetch(`https://localhost/products/${id}`)
         .then(response => response.json())
         .then(product => {
             const productName = prompt("Новое название товара:", product.name);
@@ -47,7 +47,7 @@ function showEditForm(id) {
                 description: productDescription
             };
 
-            fetch(`http://localhost:4000/products/${id}`, {
+            fetch(`https://localhost/products/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedProduct)
@@ -66,7 +66,7 @@ function deleteProduct(id) {
     if (!confirm('Вы уверены, что хотите удалить товар?')) {
         return;
     }
-    fetch(`http://localhost:4000/products/${id}`, { method: 'DELETE' })
+    fetch(`https://localhost/products/${id}`, { method: 'DELETE' })
         .then(() => {
             alert('Товар удален');
             loadProducts();
@@ -98,7 +98,7 @@ document.getElementById('addProductForm').addEventListener('submit', function(e)
         description: description // Добавляем описание товара
     };
 
-    fetch('http://localhost:4000/products', {
+    fetch('https://localhost/products', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -124,7 +124,7 @@ document.getElementById('addProductForm').addEventListener('submit', function (e
 
     const newProduct = { name, price: parseInt(price), category, description };
 
-    fetch('http://localhost:4000/products', {
+    fetch('https://localhost/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProduct)

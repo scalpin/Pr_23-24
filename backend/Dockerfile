@@ -7,6 +7,9 @@ WORKDIR /app
 # Копируем только package.json (чтобы закешировать слои с зависимостями) 
 COPY package.json ./ 
 
+#мб удалить
+COPY . /app
+
 # Устанавливаем зависимости 
 RUN npm install 
 
